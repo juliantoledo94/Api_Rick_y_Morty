@@ -11,8 +11,8 @@ Si no se encuentra ningún personaje, mostrar un mensaje indicando que no se enc
 
 
 
-const getPersonajeFromApi = () =>{
-    return fetch(`https://rickandmortyapi.com/api/character`)
+const getPersonajeFromApi = (name) =>{
+    return fetch(`https://rickandmortyapi.com/api/character/?name=${name}`)
     .then(response => response.json())
     .then(({results}) => results.map((personajes)=>{
         const{name, species, image, gender} = personajes;
@@ -21,4 +21,34 @@ const getPersonajeFromApi = () =>{
     }))
 }
 
-getPersonajeFromApi()
+
+
+
+const createCard= ({name, species, image, gender}) =>`
+    <div class="card container d-flex justify-content-center" style="width: 18rem;">
+    <img src="${image}" class="card-img-top" alt="${name}">
+    <div class="card-body">
+        <h5 class="card-title">${name}</h5>
+        <p class="card-text">${gender}</p>
+        <p class="card-text">${species}</p>
+    </div>
+    </div>
+`
+
+
+const pageContent = document.querySelector("#characterResults")
+const searchInput = document.querySelector("#characterName")
+const searchButton = document.querySelector("#searchButton")
+
+const render = async () =>{
+    searchButton.addEventListener("click", async ()=>{
+        const valorInput = searchInput.value
+        firstPage = await getPersonajeFromApi(valorInput)
+        const template = firstPage
+        .map(character => createCard(character))
+        .join("")
+        return pageContent.innerHTML = template
+    })
+}
+
+render()
